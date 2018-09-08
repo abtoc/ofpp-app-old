@@ -1,0 +1,5 @@
+extends layout.pug
+
+block menu
+    li: a(href="{{ url_for('staffs.create') }}") 新規作成
+    li: a(href="{{ url_for('staffs.index') }}") 職員一覧

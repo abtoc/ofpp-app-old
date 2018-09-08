@@ -1,0 +1,24 @@
+extends users/layout.pug
+
+block title
+    | ユーザ一覧 - ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th #
+                th ユーザID
+                th 作成日
+                th 更新日
+                th
+        tbody
+            for user in users
+                tr
+                    td= user.id
+                    td= user.userid
+                    td= user.create_at
+                    td= user.update_at
+                    td: .text-right
+                        .btn-group
+                            if user.userid != 'admin'
+                                a.btn.btn-sm.btn-danger(href="{{ url_for('users.destroy',id=user.id) }}") 削除

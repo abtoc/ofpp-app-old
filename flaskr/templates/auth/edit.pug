@@ -1,0 +1,10 @@
+extends layout.pug
+
+block title
+    | パスワード変更
+block content
+    form(method="POST")
+        +generate_fields(form)
+        .btn-group
+            input.btn.btn-success(type="submit",value="保存")
+            a.btn.btn-danger(href="{{ url_for('index') }}") キャンセル

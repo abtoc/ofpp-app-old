@@ -1,0 +1,26 @@
+extends worklogs/layout.pug
+
+block title
+    | {{ item['name'] }} 勤怠編集 - ペタペタシステム
+block content
+    .form-group
+        label 氏名
+        div {{ item['name'] }}
+    .form-group
+        label 日付
+        div {{ item['yymmdd'] }}
+    if item['absence']
+        .form-group
+            label 欠勤
+    else
+        .form-group
+            label 開始時間
+            div {{ item['work_in']}}
+        .form-group
+            label 終了時間
+            div {{ item['work_out']}}
+    form(method="POST")
+        +generate_fields(form)
+        .btn-group
+            input.btn.btn-success(type="submit",value="保存")
+            a.btn.btn-danger(href="{{ url_for('worklogs.index', id=id, yymm=yymm) }}") キャンセル

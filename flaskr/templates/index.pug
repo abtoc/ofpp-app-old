@@ -1,0 +1,32 @@
+extends layout.pug
+
+block title
+    |ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th 名前
+                th 今日
+                th 昨日
+                th 一昨日
+                td
+        tbody
+            for item in items
+                tr
+                    td= item['name']
+                    td: a(href="{{ item['url'] }}")= item['caption']
+                    td: a(href="{{ item['url1'] }}")= item['caption1']
+                    td: a(href="{{ item['url2'] }}")= item['caption2']
+                    td: .text-right
+                        .btn-group
+                            if not item['staff']
+                                .row: .btn-group
+                                    a.btn.btn-info(href="{{ url_for('performlogs.index', id=item['id']) }}") 実績記録
+                                    a.btn.btn-info(href="{{ url_for('report_performlogs.report', id=item['id'], yymm=item['yymm']) }}" target="_blank") 当月実績記録票
+                                    a.btn.btn-info(href="{{ url_for('report_performlogs.report', id=item['id'], yymm=item['yymm_l']) }}" target="_blank") 前月実績記録票
+                            .row: .btn-group
+                                a.btn.btn-info(href="{{ url_for('worklogs.index', id=item['id'], yymm=item['yymm']) }}") 勤怠記録
+                                a.btn.btn-info(href="{{ url_for('report_worklogs.report', id=item['id'], yymm=item['yymm']) }}" target="_blank") 当月勤怠記録票
+                                a.btn.btn-info(href="{{ url_for('report_worklogs.report', id=item['id'], yymm=item['yymm_l']) }}") 前月勤怠記録票
+ 

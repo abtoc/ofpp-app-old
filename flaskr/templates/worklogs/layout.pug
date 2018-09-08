@@ -1,0 +1,6 @@
+extends layout.pug
+
+block menu
+    li: a(href="{{ url_for('report_worklogs.report', id=id, yymm=yymm) }}" target="_blank") 印刷
+    li: a(href="{{ url_for('index') }}") 一覧
+    li: a(href="{{  url_for('worklogs.update', id=id, yymm=yymm) }}") 更新

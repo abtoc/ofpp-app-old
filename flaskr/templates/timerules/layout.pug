@@ -1,0 +1,5 @@
+extends layout.pug
+
+block menu
+    li: a(href="{{ url_for('timerules.create') }}") 新規作成
+    li: a(href="{{ url_for('timerules.index') }}") タイムテーブル一覧

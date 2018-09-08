@@ -1,0 +1,38 @@
+extends absences/layout.pug
+
+block title
+    | 欠席時対応 - ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th(colspan="1"): .hidden-print: a(href="{{ url_for('absences.index', yymm=head['prev']) }}") <<前月
+                th(colspan="1")= head['ym']
+                th(colspan="2")
+                th(colspan="1"): .text-right
+                th(colspan="1"):  .hidden-print: .text-right: a(href="{{ url_for('absences.index', id=id, yymm=head['next']) }}") 翌月>>
+            tr
+                th.col-xs-1: .text-center 日付
+                th.col-xs-2: .text-center 欠席者
+                th.col-xs-2: .text-center 対応職員
+                th.col-xs-1 欠席理由
+                th.col-xs-5 相談援助
+                th.col-xs-1
+        tbody
+            for item in items
+                tr
+                    if item['deleted']
+                        td: del: .text-center {{ item['dd'] }} {{ item['enabled'] }}
+                        td: del: .text-center= item['name']
+                        td: del: .text-center= item['staff']
+                        td: del= item['reason']
+                        td: del= item['remarks']
+                    else
+                        td: .text-center {{ item['dd'] }} {{ item['enabled'] }}
+                        td: .text-center= item['name']
+                        td: .text-center= item['staff']
+                        td= item['reason']
+                        td= item['remarks']
+                    td: .text-right
+                        .hidden-print: .btn-group
+                            a.btn.btn-sm.btn-primary(href="{{ url_for('absences.edit', id=item['id'], yymm=yymm, dd=item['dd']) }}") 編集

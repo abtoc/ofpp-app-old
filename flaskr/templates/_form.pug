@@ -1,0 +1,23 @@
+mixin generate_fields(form)
+    for field in form
+        if (field.type == 'CSRFTokenField') or (field.type == 'HiddenField')
+            | {{ field() }}
+        else
+            if field.errors
+                if field.type in ("BooleanField") 
+                    .checkbox.hass-error: label=  field()
+                        | {{ field.label }}
+                        for error in field.errors
+                            span.help-block= error
+                else
+                    .form-group.has-error {{ field.label }}
+                        | {{ field(class='form-control') }}
+                        for error in field.errors
+                            span.help-block= error
+            else
+                if field.type in ("BooleanField")
+                    .checkbox: label=  field()
+                        | {{ field.label }}
+                else
+                    .form-group=  field.label
+                        | {{ field(class='form-control') }}

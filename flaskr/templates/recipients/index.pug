@@ -1,0 +1,39 @@
+extends persons/layout.pug
+
+block title
+    |メンバー一覧 - ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th
+                th 名前
+                th: .hidden-print 受給者番号
+                th: .hidden-print 利用開始日
+                th(colspan="2") 支給決定日
+                th(colspan="2") 適用決定日
+                th: .hidden-print 作成日
+                th: .hidden-print 更新日
+                th
+        tbody
+            for item in items
+                tr
+                    td= 'レ' if item['enabled'] else ''
+                    td= item['name']
+                    td: .hidden-print= item['number']
+                    td: .hidden-print= item['usestart']
+                    td= item['supply_in']
+                    if item['supply_over']
+                        td(bgcolor="#ffffc0")= item['supply_out']
+                    else
+                        td= item['supply_out']
+                    td= item['apply_in']
+                    if item['apply_over']
+                       td(bgcolor="#ffffc0")= item['apply_out']
+                    else
+                         td= item['apply_out']
+                    td: .hidden-print= item['create_at']
+                    td: .hidden-print= item['update_at']
+                    td: .text-right
+                        .hidden-print: .btn-group
+                            a.btn.btn-sm.btn-primary(href="{{ url_for('recipients.edit',id=item['id']) }}") 編集

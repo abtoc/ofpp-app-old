@@ -1,0 +1,30 @@
+extends staffs/layout.pug
+
+block title
+    |職員一覧 - ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th #
+                th
+                th 名前
+                th IDm
+                th タイムテーブル
+                th 作成日
+                th 更新日
+                th
+        tbody
+            for item in items
+                tr
+                    td= item['id']
+                    td= 'レ' if item['enabled'] else ''
+                    td= item['name']
+                    td= item['idm']
+                    td= item['timerule']
+                    td= item['create_at']
+                    td= item['update_at']
+                    td: .text-right
+                        .btn-group
+                            a.btn.btn-sm.btn-primary(href="{{ url_for('staffs.edit',id=item['id']) }}") 編集
+                            a.btn.btn-sm.btn-danger(href="{{ url_for('staffs.destroy',id=item['id']) }}") 削除

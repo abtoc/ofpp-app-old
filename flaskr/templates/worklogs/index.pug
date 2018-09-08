@@ -1,0 +1,61 @@
+extends worklogs/layout.pug
+
+block title
+    | {{ head['name'] }} 勤務票 - ペタペタシステム
+block content
+    table.table.table-hover
+        thead
+            tr
+                th(colspan="3"): .hidden-print: a(href="{{ url_for('worklogs.index', id=id, yymm=head['prev']) }}") <<前月
+                th(colspan="2")= head['ym']
+                th(colspan="4")= head['name']
+                th(colspan="2"): .text-right
+                    if not head['staff']
+                         .hidden-print: a(href="{{ url_for('performlogs.index', id=id, yymm=yymm) }}") 実績記録
+                th(colspan="1"):  .hidden-print: .text-right: a(href="{{ url_for('worklogs.index', id=id, yymm=head['next']) }}") 翌月>>
+            tr
+                th: .text-center 日
+                th: .text-center 曜日
+                th: .text-center 開始時刻
+                th: .text-center 終了時刻
+                th: .text-center 勤務時間
+                th: .text-center 休憩時間
+                th: .text-center 残業時間
+                th: .text-center 欠勤
+                th: .text-center 遅刻
+                th: .text-center 早退
+                th 備考
+                th
+        tbody
+            for item in items
+                tr
+                    td: .text-center= item['dd']
+                    td: .text-center= item['week']
+                    td: .text-center= item['work_in'] if item['work_in'] != None else ''
+                    td: .text-center= item['work_out'] if item['work_out'] != None else ''
+                    td: .text-center= item['value'] if item['value'] != None else ''
+                    td: .text-center= item['break_t'] if item['break_t'] != None else ''
+                    td: .text-center= item['over_t'] if item['over_t'] != None else ''
+                    td: .text-center= '○' if item['absence'] else ''
+                    td: .text-center= '○' if item['late'] else ''
+                    td: .text-center= '○' if item['leave'] else ''
+                    td: .text-left= item['remarks'] if item['remarks'] != None else ''
+                    td: .text-right
+                        .hidden-print: .btn-group
+                            if item['edit']
+                                a.btn.btn-sm.btn-primary(href="{{ url_for('worklogs.edit', id=id, yymm=yymm, dd=item['dd']) }}") 編集
+                            elif head['staff']
+                                a.btn.btn-sm.btn-primary(href="{{ url_for('worklogs.create', id=id, yymm=yymm, dd=item['dd']) }}") 編集
+                            if head['staff']
+                                a.btn.btn-sm.btn-danger(href="{{ url_for('worklogs.destroy', id=id, yymm=yymm, dd=item['dd']) }}") 削除
+        tfoot
+            tr
+                td(colspan="2"): .text-center 合計
+                td(colspan="2"): .text-center= foot['cnt']
+                td: .text-center= foot['sum']
+                td: .text-center= foot['break_t']
+                td: .text-center= foot['over_t']
+                td: .text-center= foot['absence']
+                td: .text-center= foot['late']
+                td: .text-center= foot['leave']
+                td(colspan="2")

@@ -1,0 +1,10 @@
+migrations/
+migrations.bak/
+instance
+.python-version
+*.pyc
+*.db
+*.sqlite3
+nohup.out
+celerybeat-schedule.*
+celerybeat.*
