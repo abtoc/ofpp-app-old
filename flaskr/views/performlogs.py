@@ -113,7 +113,7 @@ def index(id, yymm=None):
                 item['edit'] = True
                 item['delete'] = True
             else:
-                if (not bool(performlog.work_in)) or (not bool(performlog.work_out)):
+                if (not bool(performlog.work_in)) and (not bool(performlog.work_out)):
                     item['edit'] = True
                     item['delete'] = True
                 else:
