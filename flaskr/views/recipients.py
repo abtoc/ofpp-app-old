@@ -1,7 +1,8 @@
 from flask import Blueprint, render_template, redirect, url_for, flash, abort
 from flask_login import login_required
 from flask_wtf import FlaskForm
-from wtforms import StringField, DateField
+from wtforms import StringField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, Regexp, Optional
 from flaskr import db
 from flaskr.models import Recipient
