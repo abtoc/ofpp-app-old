@@ -103,3 +103,7 @@ def update_worklog_value(id, yymm, dd=None):
     except Exception as e:
         db.session.rollback()
         app.logger.error(e)
+
+@celery.task
+def destroy_worklogs():
+    app.logger.info('Destroy WorkLogs.')

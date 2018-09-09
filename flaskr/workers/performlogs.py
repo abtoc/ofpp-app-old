@@ -68,3 +68,7 @@ def update_performlogs_enabled(id, yymm):
         except Exception as e:
             db.session.rollback()
             app.logger.error(e)
+
+@celery.task
+def destroy_performlogs():
+    app.logger.info('Destroy PerformLogs.')
