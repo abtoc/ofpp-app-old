@@ -166,7 +166,6 @@ def make_pdf(head, items, foot):
     output.close()
     return result
 
-
 @bp.route('/<id>/<yymm>')
 def report(id, yymm):
     head = make_head(id, yymm)
