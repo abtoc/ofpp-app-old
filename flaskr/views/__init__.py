@@ -22,7 +22,10 @@ def _get_caption(person, yymmdd):
         if worklog.absence:
             caption = '欠席'
         elif bool(worklog.work_in) or bool(worklog.work_out):
-            caption = '{}-{}'.format(worklog.work_in, worklog.work_out)
+            caption = '{}-{}'.format(
+                worklog.work_in if bool(worklog.work_in) else '', 
+                worklog.work_out if bool(worklog.work_out) else ''
+            )
         else:
             caption = 'ー'
     return caption, url
