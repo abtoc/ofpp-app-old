@@ -5,10 +5,10 @@ block title
 block content
     .form-group
         label 氏名
-        div {{ item['name'] }}
+        .form-control:= item['name']
     .form-group
         label 日付
-        div {{ item['yymmdd'] }}
+        .form-control:= item['yymmdd']
     form(method="POST")
         +generate_fields(form)
         .btn-group
