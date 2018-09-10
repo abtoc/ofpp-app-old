@@ -92,6 +92,7 @@ def index(id, yymm=None):
             create=True,
             delete=False,
             enabled=None,
+            presented=None,
             absence=False,
             absence_add=False,
             work_in=None,
@@ -119,6 +120,7 @@ def index(id, yymm=None):
                 else:
                     item['edit'] = True
             item['enabled'] = performlog.enabled
+            item['presented'] = performlog.presented
             item['absence'] = performlog.absence
             item['absence_add'] = performlog.absence_add
             item['work_in'] = performlog.work_in

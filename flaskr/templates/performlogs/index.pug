@@ -35,12 +35,19 @@ block content
                 tr
                     td: .text-center= item['dd']
                     td: .text-center= item['week']
-                    if item['enabled'] == None
-                        td
-                    elif item['enabled']
-                        td: .text-center ○
-                    else
-                        td: .text-center ×
+                    td: .text-center
+                        if item['enabled'] == None
+                            |
+                        elif item['enabled']
+                            | ○
+                        else
+                            | ×
+                        if item['presented'] == None
+                            |
+                        elif item['presented']
+                            | ○
+                        else
+                            | ×
                     if item['absence']
                         if item['absence_add']:
                             td: .text-center 欠席(加算)
