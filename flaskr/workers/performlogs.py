@@ -35,10 +35,37 @@ def sync_performlog_from_worklog(id, yymm, dd=None):
         db.session.add(performlog)
     try:
         db.session.commit()
-        update_performlogs_enabled.delay(id, yymm)
+        update_performlogs_enabled(id, yymm)
     except Exception as e:
         db.session.rollback()
         app.logger.error(e)
+
+def _check_persent(performlog):
+    if bool(performlog.work_in) or bool(performlog.work_out):
+        return True
+    worklog = WorkLog.get(performlog.person_id, performlog.yymm, performlog.dd)
+    if (worklog is None) or (worklog.value is None):
+        return False
+    return True
+
+def _check_enabled(performlog):
+    if bool(performlog.absence_add):
+        return True
+    if bool(performlog.pickup_in) or bool(performlog.pickup_out):
+        return True
+    if bool(performlog.visit):
+        return True
+    if bool(performlog.meal):
+        return True
+    if bool(performlog.medical):
+        return True
+    if bool(performlog.experience):
+        return True
+    if bool(performlog.outside):
+        return True
+    if bool(performlog.remarks):
+        return True
+    return False
 
 @celery.task
 def update_performlogs_enabled(id, yymm):
@@ -53,15 +80,20 @@ def update_performlogs_enabled(id, yymm):
     last = last.day - 8
     performlogs = PerformLog.get_yymm(id, yymm)
     count = 0
+    absence = 0
+    visit = 0
     for performlog in performlogs:
-        if bool(performlog.absence):
-            performlog.enabled = None
-        else:
+        if _check_persent(performlog):
             count = count + 1
             if count <= last:
+                performlog.presented = True
                 performlog.enabled = True
             else:
+                performlog.presented = False
                 performlog.enabled = False
+        else:
+            performlog.enabled = _check_enabled(performlog)
+            performlog.presented = False
         db.session.add(performlog)
         try:
             db.session.commit()

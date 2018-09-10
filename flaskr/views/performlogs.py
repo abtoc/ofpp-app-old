@@ -131,15 +131,14 @@ def index(id, yymm=None):
             item['experience'] = performlog.experience
             item['outside'] = '○' if performlog.outside else ''
             item['remarks'] = performlog.remarks
-            if (bool(item['enabled'])) and (not bool(item['absence'])):
-                foot['count'] += 1 if bool(item['work_in']) else 0
-                foot['pickup'] += 1 if bool(item['pickup_in']) else 0
-                foot['pickup'] += 1 if bool(item['pickup_out']) else 0
-                foot['visit'] += 1 if bool(item['visit'])  else 0
-                foot['meal'] += 1 if bool(item['meal']) else 0
-                foot['medical'] += 1 if bool(item['medical']) else 0
-                foot['experience'] += 1 if bool(item['experience']) else 0
-                foot['outside'] += 1 if bool(item['outside']) else 0
+            foot['count'] += 1 if bool(performlog.presented) else 0
+            foot['pickup'] += 1 if bool(item['pickup_in']) else 0
+            foot['pickup'] += 1 if bool(item['pickup_out']) else 0
+            foot['visit'] += 1 if bool(item['visit'])  else 0
+            foot['meal'] += 1 if bool(item['meal']) else 0
+            foot['medical'] += 1 if bool(item['medical']) else 0
+            foot['experience'] += 1 if bool(item['experience']) else 0
+            foot['outside'] += 1 if bool(item['outside']) else 0
         items.append(item)
         first = first + relativedelta(days=1)
     return render_template('performlogs/index.pug', id=id, yymm=yymm, head=head, items=items, foot=foot)

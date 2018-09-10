@@ -8,8 +8,11 @@ block content
             tr
                 th(colspan="4"): .hidden-print: a(href="{{ url_for('performlogs.index', id=id, yymm=head['prev']) }}") <<前月
                 th(colspan="2")= head['ym']
-                th(colspan="6")= head['name']
-                th(colspan="2"): .text-right: .hidden-print: a(href="{{ url_for('worklogs.index', id=id, yymm=yymm) }}") 勤怠記録
+                th(colspan="5")= head['name']
+                th(colspan="3"): .text-right: .hidden-print
+                    a(href="{{ url_for('worklogs.index', id=id, yymm=yymm) }}") 勤怠記録
+                    span &nbsp;&nbsp;
+                    a(href="{{ url_for('absences.index', yymm=yymm) }}") 欠席時対応加算記録
                 th(colspan="1"): .text-right: .hidden-print: a.hidden-print(href="{{ url_for('performlogs.index', id=id, yymm=head['next']) }}") 翌月>>
             tr
                 th: .text-center 日

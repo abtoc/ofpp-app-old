@@ -115,7 +115,8 @@ class PerformLog(db.Model):
     person_id = db.Column(db.String(36))             # 利用者ID
     yymm = db.Column(db.String(8))                   # 年月
     dd = db.Column(db.Integer)                       # 日
-    enabled = db.Column(db.Boolean)                  # 月の日数-8を超えたらFalse
+    enabled = db.Column(db.Boolean)                  # 実績票出力対象はTrue
+    presented = db.Column(db.Boolean)                # 月の日数-8を超えたらFalse
     absence = db.Column(db.Boolean, nullable=False)  # 欠席
     absence_add = db.Column(db.Boolean, nullable=False) # 欠席加算対象
     work_in  = db.Column(db.String(8))               # 開始時間

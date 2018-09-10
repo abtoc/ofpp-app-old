@@ -4,6 +4,12 @@ block title
     | 欠席時対応更新 - ペタペタシステム
 block content
     form(method="POST")
+        .form-group
+            label 日付
+            .form-control: {{ yymmdd }}
+        .form-group
+            label 連絡者
+            .form-control: {{ name }}
         +generate_fields(form)
         .btn-group
             input.btn.btn-success(type="submit",value="保存")

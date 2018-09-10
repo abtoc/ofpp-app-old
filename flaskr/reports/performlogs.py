@@ -71,15 +71,9 @@ def make_items(id, yymm):
             outside = '',
             remarks = ''
         )
-        if (performlog.absence_add) and (bool(performlog.absencelog)) and (bool(performlog.absencelog.enabled)):
-            foot['absence'] = foot['absence'] + 1
-            item['stat'] = '欠席'
-            item['remarks'] = performlog.remarks
-            items.append(item)
-            continue            
         if not performlog.enabled:
             continue
-        foot['count'] += 1
+        foot['count'] += 1 if bool(performlog.presented) else 0
         item['work_in'] = performlog.work_in if bool(performlog.work_in) else ''
         item['work_out'] = performlog.work_out if bool(performlog.work_out) else ''
         item['pickup_in'] = 1 if bool(performlog.pickup_in) else ''

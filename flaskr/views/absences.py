@@ -63,6 +63,7 @@ def edit(id,yymm,dd):
     person = Person.get(id)
     if person is None:
         abort(404)
+    yymmdd = date(int(yymm[:4]), int(yymm[4:]), int(dd))
     form = AbsenceForm(obj=absencelog)
     if form.validate_on_submit():
         absencelog.populate_form(form)
@@ -74,4 +75,4 @@ def edit(id,yymm,dd):
         except Exception as e:
             db.session.rollback()
             flash('欠席時対応加算記録更新時にエラーが発生しました "{}"'.format(e), 'danger')
-    return render_template('absences/edit.pug', form=form, name=person.name)
+    return render_template('absences/edit.pug', form=form, yymmdd=yymmdd, name=person.name)
