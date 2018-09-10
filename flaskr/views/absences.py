@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, abort
 from flask_login import login_required
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
+from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired
 from flaskr import db
 from flaskr.models import Person, AbsenceLog
@@ -11,6 +12,7 @@ from flaskr.models import Person, AbsenceLog
 bp = Blueprint('absences', __name__, url_prefix='/absences')
 
 class AbsenceForm(FlaskForm):
+    contact = DateField('連絡日', validators=[DataRequired(message='必須入力です')])
     staff_id = SelectField('対応職員', render_kw={'class': 'form-control'})
     reason = StringField('欠席理由', validators=[DataRequired(message='必須項目です')])
     remarks = StringField('相談援助')
@@ -44,6 +46,7 @@ def index(yymm=None):
             dd= absencelog.dd,
             enabled = '○' if absencelog.enabled else '×',
             deleted = absencelog.deleted,
+            contact = absencelog.contact,
             name = person.get_display() if bool(person) else '',
             staff = staff.name if bool(staff) else '',
             reason = absencelog.reason if bool(absencelog.reason) else '',
