@@ -147,6 +147,27 @@ class PerformLog(db.Model):
         if self.absence_add:
             if not self.absence:
                 raise ValidationError('欠席にチェックしてください')
+    def sync_to_worklog(self, worklog):
+        if worklog is None:
+            worklog = WorkLog(person_id=self.person_id, yymm=self.yymm, dd=self.dd)
+        worklog.absence = self.absence
+        worklog.work_in = self.work_in
+        worklog.work_out = self.work_out
+        if worklog.absence:
+            worklog.presented = False
+        elif bool(worklog.work_in) or bool(worklog.work_out) or (worklog.value is not None):
+            worklog.presented = True
+        else:
+            worklog.presented = False
+        db.session.add(worklog)
+    def sync_from_worklog(self, workrec):
+        # ICカードから入力なので欠席は取消す
+        self.absence = False
+        self.absence_add = False
+        self.work_in = workrec.work_in
+        self.work_out = workrec.work_out
+        if bool(self.absencelog):
+            self.absencelog.deleted = True
     @classmethod
     def get(cls, id, yymm, dd):
         return cls.query.filter(cls.person_id == id, cls.yymm == yymm, cls.dd == dd).first()
@@ -199,6 +220,7 @@ class WorkLog(db.Model):
     person_id = db.Column(db.String(36))             # 利用者ID
     yymm = db.Column(db.String(8))                   # 年月
     dd = db.Column(db.Integer)                       # 日
+    presented = db.Column(db.Boolean)                # 勤怠として有効ならtrue 
     work_in  = db.Column(db.String(8))               # 開始時間
     work_out = db.Column(db.String(8))               # 終了時間
     value = db.Column(db.Float)                      # 勤務時間
@@ -218,6 +240,13 @@ class WorkLog(db.Model):
             self.work_out == None
         if (self.remarks is not None) and (len(self.remarks) == 0):
             self.remarks == None
+        if bool(self.work_in) or bool(self.work_out) or (self.value is not None):
+            self.presented = True
+        else:
+            self.presented = False
+        worklog = WorkLog.get(self.person_id, self.yymm, self.dd)
+        if (worklog is not None) and (worklog.value is not None):
+            self.presented = True 
     @classmethod
     def get(cls, id, yymm, dd):
         return cls.query.filter(cls.person_id == id, cls.yymm == yymm, cls.dd == dd).first()

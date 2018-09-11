@@ -29,7 +29,14 @@ block content
         tbody
             for item in items
                 tr
-                    td: .text-center= item['dd']
+                    td: .text-center
+                        | {{ item['dd'] }}
+                        if item['presented'] == None
+                            |
+                        elif item['presented']
+                            | ○
+                        else
+                            | ×
                     td: .text-center= item['week']
                     td: .text-center= item['work_in'] if item['work_in'] != None else ''
                     td: .text-center= item['work_out'] if item['work_out'] != None else ''

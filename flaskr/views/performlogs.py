@@ -6,11 +6,11 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, IntegerField, ValidationError
 from wtforms.validators import DataRequired, Regexp, Optional
 from flaskr import app, db, cache
-from flaskr.models import Person, PerformLog, AbsenceLog
+from flaskr.models import Person, PerformLog, AbsenceLog, WorkLog
 from flaskr.utils import weeka
-from flaskr.workers.worklogs import sync_worklog_from_performlog
 from flaskr.workers.performlogs import update_performlogs_enabled
 from flaskr.workers.absences import update_absencelog_enabled
+from flaskr.workers.worklogs import update_worklog_value
 
 bp = Blueprint('performlogs', __name__, url_prefix='/performlogs')
 
@@ -172,11 +172,13 @@ def create(id, yymm, dd):
                 absencelog.deleted = False
                 performlog.absencelog = absencelog
             db.session.add(performlog)
+            worklog = WorkLog(person_id=id, yymm=yymm, dd=dd)
+            performlog.sync_to_worklog(worklog)
             try:
                 db.session.commit()
-                sync_worklog_from_performlog.delay(id, yymm, dd)
                 update_performlogs_enabled.delay(id, yymm)
                 update_absencelog_enabled.delay(id, yymm)
+                update_worklog_value.delay(id, yymm, dd)
                 flash('実績の追加ができました','success')
                 return redirect(url_for('performlogs.index', id=id, yymm=yymm))
             except Exception as e:
@@ -220,11 +222,13 @@ def edit(id, yymm, dd):
                 if bool(performlog.absencelog):
                     performlog.absencelog.deleted = True
             db.session.add(performlog)
+            worklog = WorkLog.get(id, yymm, dd)
+            performlog.sync_to_worklog(worklog)
             try:
                 db.session.commit()
-                sync_worklog_from_performlog.delay(id, yymm, dd)
                 update_performlogs_enabled.delay(id, yymm)
                 update_absencelog_enabled.delay(id, yymm)
+                update_worklog_value.delay(id, yymm, dd)
                 flash('実績の更新ができました','success')
                 return redirect(url_for('performlogs.index', id=id, yymm=yymm))
             except Exception as e:
@@ -251,10 +255,12 @@ def destroy(id,yymm,dd):
     if bool(performlog.absencelog):
         db.session.delete(performlog.absencelog)
     db.session.delete(performlog)
+    worklog = WorkLog.get(id, yymm, dd)
+    db.session.delete(worklog)
     try:
         db.session.commit()
-        sync_worklog_from_performlog.delay(id, yymm, dd)
         update_performlogs_enabled.delay(id, yymm)
+        update_absencelog_enabled.delay(id, yymm)
         flash('実績の削除ができました', 'success')
     except Exception as e:
         db.session.rollback()
@@ -264,7 +270,7 @@ def destroy(id,yymm,dd):
 @bp.route('/<id>/<yymm>/update')
 @login_required
 def update(id,yymm):
-    sync_worklog_from_performlog.delay(id, yymm)
     update_performlogs_enabled.delay(id, yymm)
     update_absencelog_enabled.delay(id, yymm)
+    update_worklog_value.delay(id, yymm)
     return redirect(url_for('performlogs.index', id=id, yymm=yymm))

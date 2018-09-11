@@ -2,9 +2,10 @@ from datetime import datetime
 from flask import Blueprint
 from flask import jsonify
 from flaskr import db, cache, auth
-from flaskr.models import Person, WorkLog
+from flaskr.models import Person, WorkLog, PerformLog
 from flaskr.workers.worklogs import update_worklog_value
-from flaskr.workers.performlogs import sync_performlog_from_worklog
+from flaskr.workers.performlogs import update_performlogs_enabled
+from flaskr.workers.absences import update_absencelog_enabled
 
 bp = Blueprint('api_idm', __name__, url_prefix="/api/idm")
 
@@ -44,12 +45,20 @@ def post(idm):
         worklog.value = None
         worklog.break_t = None
         worklog.over_t = None
+    worklog.presented = True
     db.session.add(worklog)
+    if not person.staff:
+        performlog = PerformLog.get(person.id, yymm, dd)
+        if performlog is None:
+            performlog = PerformLog(person_id=person.id, yymm=yymm, dd=dd)
+        performlog.sync_from_worklog(worklog)
+        db.session.add(performlog)
     try:
         db.session.commit()
         update_worklog_value.delay(person.id, yymm, dd)
         if not person.staff:
-            sync_performlog_from_worklog.delay(person.id, yymm, dd)
+            update_performlogs_enabled.delay(person.id, yymm)
+            update_absencelog_enabled.delay(person.id, yymm)
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "{}".format(e)}), 500

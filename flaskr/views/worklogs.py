@@ -9,7 +9,6 @@ from flaskr import app, db
 from flaskr.models import Person, WorkLog
 from flaskr.utils import weeka
 from flaskr.workers.worklogs import update_worklog_value
-from flaskr.workers.performlogs import sync_performlog_from_worklog
 
 bp = Blueprint('worklogs', __name__, url_prefix='/worklogs')
 
@@ -86,6 +85,7 @@ def index(id, yymm=None):
     while first < last:
         item = dict(
             dd=first.day,
+            presented=None,
             week=weeka[first.weekday()],
             situation=None,
             work_in=None,
@@ -102,6 +102,7 @@ def index(id, yymm=None):
         worklog = WorkLog.get_date(id, first)
         if worklog is not None:
             item['edit'] = True
+            item['presented'] = worklog.presented
             item['work_in']  = worklog.work_in
             item['work_out'] = worklog.work_out
             item['value'] = worklog.value
@@ -232,5 +233,5 @@ def destroy(id,yymm,dd):
 @bp.route('/<id>/<yymm>/update')
 @login_required
 def update(id,yymm):
-    sync_performlog_from_worklog.delay(id, yymm)
+    update_worklog_value.delay(id, yymm)
     return redirect(url_for('worklogs.index', id=id, yymm=yymm))

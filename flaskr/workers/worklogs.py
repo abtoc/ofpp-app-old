@@ -3,47 +3,6 @@ from flaskr.models import Person, PerformLog, WorkLog, TimeRule
 import json
 
 @celery.task
-def sync_worklog_from_performlog(id, yymm, dd=None):
-    app.logger.info('Synchronize WorkLog from PerformLog. id={} yymm={} dd={}'.format(id,yymm,dd))
-    person = Person.get(id)
-    if person is None:
-        return
-    if dd is None:
-        dds = range(1,32)
-    else:
-        dds = (dd,)
-    for d in dds:
-        performlog = PerformLog.get(id, yymm, d)
-        worklog = WorkLog.get(id, yymm, d)
-        if (performlog is None) and (worklog is None):
-            continue
-        app.logger.info('Synchronizing WorkLog from PerformLog. id={} yymm={} dd={}'.format(id,yymm,d))
-        if performlog is None:
-            db.session.delete(worklog)
-            continue
-        if worklog is None:
-            worklog = WorkLog(person_id=id, yymm=yymm, dd=d)
-        worklog.absence = performlog.absence
-        if worklog.absence:
-            worklog.work_in = None
-            worklog.work_out = None
-            worklog.value = None
-            worklog.break_t = None
-            worklog.over_t = None
-            worklog.late = None
-            worklog.leave = None
-        else:
-            worklog.work_in = performlog.work_in
-            worklog.work_out = performlog.work_out
-        db.session.add(worklog)
-    try:
-        db.session.commit()
-        update_worklog_value(id, yymm, dd)
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(e)
-
-@celery.task
 def update_worklog_value(id, yymm, dd=None):
     app.logger.info('Update WorkLog value from Time-Table. id={} yymm={} dd={}'.format(id,yymm,dd))
     person = Person.get(id)

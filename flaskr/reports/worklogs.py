@@ -68,6 +68,7 @@ def make_items(id, yymm):
         if worklog.value is not None:
             item['value'] = worklog.value
             foot['value'] += worklog.value
+        if worklog.presented:
             foot['count'] += 1
         if worklog.over_t is not None:
             item['over_t'] = worklog.over_t
