@@ -3,7 +3,7 @@ from dateutil.relativedelta import relativedelta
 from flaskr import app, db, celery
 from flaskr.models import Person, PerformLog, WorkLog
 
-def _check_persent(performlog):
+def _is_persent(performlog):
     if bool(performlog.work_in) or bool(performlog.work_out):
         return True
     worklog = WorkLog.get(performlog.person_id, performlog.yymm, performlog.dd)
@@ -11,7 +11,7 @@ def _check_persent(performlog):
         return False
     return True
 
-def _check_enabled(performlog):
+def _is_enabled(performlog):
     if bool(performlog.absence_add):
         return True
     if bool(performlog.pickup_in) or bool(performlog.pickup_out):
@@ -46,7 +46,7 @@ def update_performlogs_enabled(id, yymm):
     absence = 0
     visit = 0
     for performlog in performlogs:
-        if _check_persent(performlog):
+        if _is_persent(performlog):
             count = count + 1
             if count <= last:
                 performlog.presented = True
@@ -55,7 +55,7 @@ def update_performlogs_enabled(id, yymm):
                 performlog.presented = False
                 performlog.enabled = False
         else:
-            performlog.enabled = _check_enabled(performlog)
+            performlog.enabled = _is_enabled(performlog)
             performlog.presented = False
         db.session.add(performlog)
         try:
