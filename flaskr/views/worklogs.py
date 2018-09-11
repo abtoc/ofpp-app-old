@@ -9,6 +9,7 @@ from flaskr import app, db
 from flaskr.models import Person, WorkLog
 from flaskr.utils import weeka
 from flaskr.workers.worklogs import update_worklog_value
+from flaskr.workers.performlogs import update_performlogs_enabled
 
 bp = Blueprint('worklogs', __name__, url_prefix='/worklogs')
 
@@ -196,6 +197,8 @@ def edit(id, yymm, dd):
                 db.session.commit()
                 if (person.staff) and (worklog.value is None):
                     update_worklog_value.delay(id, yymm, dd)
+                if not person.staff:
+                    update_performlogs_enabled(id, yymm)
                 flash('勤怠の更新ができました','success')
                 return redirect(url_for('worklogs.index', id=id, yymm=yymm))
             except Exception as e:
