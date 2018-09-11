@@ -128,6 +128,7 @@ class PerformLog(db.Model):
     medical = db.Column(db.Integer)                  # 医療連携体制加算
     experience = db.Column(db.Integer)               # 体験利用支援加算
     outside = db.Column(db.Boolean)                  # 施設外支援
+    outemp = db.Column(db.Boolean)                   # 施設外就労
     remarks = db.Column(db.String(128))              # 備考
     create_at = db.Column(db.DateTime, default=_get_now)
     update_at = db.Column(db.DateTime, onupdate=_get_now)
@@ -264,6 +265,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.String(36), primary_key=True, default=_get_uuid)
     userid = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(128))
     create_at = db.Column(db.DateTime, default=_get_now)
     update_at = db.Column(db.DateTime, onupdate=_get_now)
     def set_password(self, password):
